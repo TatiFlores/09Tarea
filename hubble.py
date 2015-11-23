@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from __future__ import division
 import numpy as np
-import matplotlib.pyplot as pyplot
+import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
 # class const_Hubble(object):
@@ -103,5 +106,41 @@ def sim_bootstrap (datos, H0_inicial):
 
 # Main
 
-# np.loadtxt('archivo_datos', usecols=[-2])
-# np.loadtxt('archivo_datos', usecols=[-1])
+distance = np.loadtxt("data/hubble_original.dat", usecols=[-2])
+recession_velocity = np.loadtxt("data/hubble_original.dat", usecols=[-1])
+
+# =================== Minimizar Chi cuadrado ===============================
+H0_inicial = 10
+D = np.linspace(-0.5, 2.5, 100)
+v = np.linspace(-400, 1200, 100)
+
+# Modelo 1:
+H0_optimo_mod1, H0_cov_mod1 = curve_fit(func_minimizar_1, distance,
+                                        recession_velocity, H0_inicial)
+
+# Modelo 2:
+H0_optimo_mod2, H0_cov_mod2 = curve_fit(func_minimizar_2, recession_velocity,
+                                        distance, H0_inicial)
+
+# Modelo promedio:
+H0_optimo_modprom = (H0_optimo_mod1 + H0_optimo_mod2) / 2
+
+
+# =============================== Plots ====================================
+
+plt.figure(1)
+plt.clf()
+plt.plot(distance, recession_velocity, 'm^', label='Datos')
+plt.plot(D, func_minimizar_1(D, H0_optimo_mod1), 'limegreen',
+         label='Modelo $v = H_0 * D$')
+plt.plot(func_minimizar_2(v,H0_optimo_mod2), v, 'mediumblue',
+         label='Modelo $D = v / H_0$')
+plt.plot(D, func_minimizar_1(D, H0_optimo_modprom), 'orange',
+         label='Modelo promedio')
+plt.xlabel('Distancia [Mpc]',fontsize = 14)
+plt.ylabel('Velocidad de recesion [km / s]',fontsize = 14)
+plt.xlim(-0.5,2.5)
+plt.grid(False)
+plt.legend(loc='upper left')
+plt.title('Titulo',fontsize = 16)
+plt.show()
