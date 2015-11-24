@@ -38,13 +38,13 @@ print """El intervalo de confianza al 95% para el coeficiente de posicion
 
 # =========================== Ajuste lineal ===============================
 
-PENDIENTE , COEF_POSIC = np.polyfit(flujo_i, flujo_z, 1)
+PENDIENTE, COEF_POSIC = np.polyfit(flujo_i, flujo_z, 1)
 x = np.linspace(min(flujo_i) - max(error_i), max(flujo_i) + max(error_i), 1000)
 y = x * PENDIENTE + COEF_POSIC
 
 # =============================== Plots ====================================
 
-plt.figure(1, figsize=(17,7))
+plt.figure(1, figsize=(17, 7))
 plt.suptitle('Histogramas', fontsize=16)
 plt.subplots_adjust(hspace=.5)
 plt.subplot(121)

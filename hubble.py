@@ -130,7 +130,7 @@ print ' '
 
 # =============================== Plots ====================================
 
-plt.figure(1, figsize=(17,7))
+plt.figure(1, figsize=(17, 7))
 plt.suptitle('Pregunta 1', fontsize=16)
 plt.subplots_adjust(hspace=.5)
 plt.subplot(121)
@@ -201,7 +201,7 @@ print "El intervalo de confianza al 95% es: [{}, {}]".format(limite_bajo,
                                                              limite_alto)
 # =============================== Plots ====================================
 
-plt.figure(2, figsize=(17,7))
+plt.figure(2, figsize=(17, 7))
 plt.suptitle('Pregunta 2', fontsize=16)
 plt.subplots_adjust(hspace=.5)
 plt.subplot(121)
