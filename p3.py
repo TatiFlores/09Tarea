@@ -32,14 +32,20 @@ limite_alto_coef = coef_posic[int(Nmc * 0.975)]
 
 print """El intervalo de confianza al 95% para la pendiente
          es: [{}:{}]""".format(limite_bajo_pendiente, limite_alto_pendiente)
-
+print ' '
 print """El intervalo de confianza al 95% para el coeficiente de posicion
          es: [{}:{}]""".format(limite_bajo_coef, limite_alto_coef)
 
-plt.figure(1, figsize=(14,7))
-plt.suptitle('Histogramas')
-plt.subplots_adjust(hspace=.5)
+# =========================== Ajuste lineal ===============================
 
+PENDIENTE , COEF_POSIC = np.polyfit(banda_i, banda_z, 1)
+
+
+# =============================== Plots ====================================
+
+plt.figure(1, figsize=(14,7))
+plt.suptitle('Histogramas', fontsize=16)
+plt.subplots_adjust(hspace=.5)
 plt.subplot(121)
 plt.xlabel('Pendientes')
 plt.ylabel('Frecuencias')
@@ -48,4 +54,19 @@ plt.subplot(122)
 plt.xlabel('Coeficientes de posicion')
 plt.ylabel('Frecuencias')
 plt.hist(coef_posic, bins=40, range=(-2, 2.5), normed=True)
+
+
+x = np.linspace(0.5, 136, 1000)
+y = x * PENDIENTE + COEF_POSIC
+
+plt.figure(2)
+plt.clf()
+plt.errorbar(banda_i, banda_z, xerr=error_i, yerr=error_z, fmt='mo',
+             label='Datos')
+plt.plot(x, y, 'c', label='Ajuste lineal', lw=2)
+plt.xlabel('Flujo banda i')
+plt.ylabel('Flujo banda z')
+plt.legend(loc='upper left')
+plt.xlim(-0.5, 140)
+
 plt.show()
