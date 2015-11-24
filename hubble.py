@@ -86,7 +86,7 @@ def biseccion(parametro1, parametro2):
 -------------------------------------------------------------------------
 -                                                                       -
 -                                                                       -
--                            PREGUNTA 2                                 -
+-                            PREGUNTA 1                                 -
 -                                                                       -
 -                                                                       -
 -------------------------------------------------------------------------
@@ -130,27 +130,30 @@ print ' '
 
 # =============================== Plots ====================================
 
-plt.figure(1)
-plt.clf()
+plt.figure(1, figsize=(17,7))
+plt.suptitle('Pregunta 1', fontsize=16)
+plt.subplots_adjust(hspace=.5)
+plt.subplot(121)
 plt.plot(distance, recession_velocity, 'm^', label='Datos')
 plt.plot(D, func_minimizar_1(D, H0_optimo_mod1), 'limegreen',
          label='Modelo $v = H_0 * D$')
 plt.plot(func_minimizar_2(v, H0_optimo_mod2), v, 'mediumblue',
          label='Modelo $D = v / H_0$')
 plt.plot(D, func_minimizar_1(D, H0_optimo_modprom), 'orange',
-         label='Modelo promedio')
+         label='Modelo bisecci'u'ó''n')
+plt.title('Velocidad $Nebulosas$ en funci'u'ó''n de la distancia')
 plt.xlabel('Distancia [Mpc]', fontsize=14)
 plt.ylabel('Velocidad de recesion [km / s]', fontsize=14)
-plt.xlim(-0.5, 2.5)
-plt.grid(False)
 plt.legend(loc='upper left')
 
-plt.figure(2)
-plt.clf()
+plt.subplot(122)
 plt.hist(H0, bins=30)
+plt.title('Valores de $H_0$ obtenidos con la simulaci'u'ó''n de Bootstrap')
 plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$', fontsize=14)
 plt.ylabel('Frecuencia', fontsize=14)
-plt.axvline(np.mean(H0), color='r')
+plt.axvline(H0_optimo_modprom, color='r', label='$H_0$ optimo bisecci'u'ó''n')
+plt.legend(loc='upper left')
+plt.savefig('p1.eps')
 
 '''
 -------------------------------------------------------------------------
@@ -198,24 +201,28 @@ print "El intervalo de confianza al 95% es: [{}, {}]".format(limite_bajo,
                                                              limite_alto)
 # =============================== Plots ====================================
 
-plt.figure(3)
-plt.clf()
+plt.figure(2, figsize=(17,7))
+plt.suptitle('Pregunta 2', fontsize=16)
+plt.subplots_adjust(hspace=.5)
+plt.subplot(121)
 plt.plot(distance, recession_velocity, 'm^', label='Datos')
 plt.plot(D, func_minimizar_1(D, H0_optimo_mod1), 'limegreen',
          label='Modelo $v = H_0 * D$')
 plt.plot(func_minimizar_2(v, H0_optimo_mod2), v, 'mediumblue',
          label='Modelo $D = v / H_0$')
 plt.plot(D, func_minimizar_1(D, H0_optimo_modprom), 'orange',
-         label='Modelo promedio')
+         label='Modelo bisecci'u'ó''n')
+plt.title('Velocidad Galaxias en funci'u'ó''n de la distancia')
 plt.xlabel('Distancia [Mpc]', fontsize=14)
 plt.ylabel('Velocidad de recesion [km / s]', fontsize=14)
-plt.grid(False)
 plt.legend(loc='upper left')
 
-plt.figure(2)
-plt.clf()
+plt.subplot(122)
 plt.hist(H0, bins=30)
+plt.title('Valores de $H_0$ obtenidos con la simulaci'u'ó''n de Bootstrap')
 plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$', fontsize=14)
 plt.ylabel('Frecuencia', fontsize=14)
-plt.axvline(np.mean(H0), color='r')
+plt.axvline(H0_optimo_modprom, color='r', label='$H_0$ optimo bisecci'u'ó''n')
+plt.legend(loc='upper left')
+plt.savefig('p2.eps')
 plt.show()

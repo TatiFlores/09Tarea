@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 # Datos
-banda_i = np.loadtxt("data/DR9Q.dat", usecols=[80])
-error_i = np.loadtxt("data/DR9Q.dat", usecols=[81])
-banda_z = np.loadtxt("data/DR9Q.dat", usecols=[82])
-error_z = np.loadtxt("data/DR9Q.dat", usecols=[83])
+flujo_i = np.loadtxt("data/DR9Q.dat", usecols=[80]) * 3.631
+error_i = np.loadtxt("data/DR9Q.dat", usecols=[81]) * 3.631
+flujo_z = np.loadtxt("data/DR9Q.dat", usecols=[82]) * 3.631
+error_z = np.loadtxt("data/DR9Q.dat", usecols=[83]) * 3.631
 
 # Simulacion montecarlo
 np.random.seed(800)
@@ -17,9 +17,9 @@ Nmc = 10000
 pendiente = np.zeros(Nmc)
 coef_posic = np.zeros(Nmc)
 for i in range(Nmc):
-    r = np.random.normal(0, 1, size=len(banda_i))  # len -> largo medicion
-    muestra_i = banda_i + error_i * r
-    muestra_z = banda_i + error_z * r
+    r = np.random.normal(0, 1, size=len(flujo_i))  # len -> largo medicion
+    muestra_i = flujo_i + error_i * r
+    muestra_z = flujo_i + error_z * r
     pendiente[i], coef_posic[i] = np.polyfit(muestra_i, muestra_z, 1)
 
 pendiente = np.sort(pendiente)
@@ -38,35 +38,34 @@ print """El intervalo de confianza al 95% para el coeficiente de posicion
 
 # =========================== Ajuste lineal ===============================
 
-PENDIENTE , COEF_POSIC = np.polyfit(banda_i, banda_z, 1)
-
+PENDIENTE , COEF_POSIC = np.polyfit(flujo_i, flujo_z, 1)
+x = np.linspace(min(flujo_i) - max(error_i), max(flujo_i) + max(error_i), 1000)
+y = x * PENDIENTE + COEF_POSIC
 
 # =============================== Plots ====================================
 
-plt.figure(1, figsize=(14,7))
+plt.figure(1, figsize=(17,7))
 plt.suptitle('Histogramas', fontsize=16)
 plt.subplots_adjust(hspace=.5)
 plt.subplot(121)
 plt.xlabel('Pendientes')
 plt.ylabel('Frecuencias')
-plt.hist(pendiente, bins=40, range=(0.5, 1.4), normed=True, color='green')
+plt.hist(pendiente, bins=40, normed=True, color='green')
 plt.subplot(122)
-plt.xlabel('Coeficientes de posicion')
+plt.xlabel('Coeficientes de posici'u'ó''n')
 plt.ylabel('Frecuencias')
-plt.hist(coef_posic, bins=40, range=(-2, 2.5), normed=True)
-
-
-x = np.linspace(0.5, 136, 1000)
-y = x * PENDIENTE + COEF_POSIC
+plt.hist(coef_posic, bins=40, normed=True)
+plt.savefig('p3_hist.eps')
 
 plt.figure(2)
 plt.clf()
-plt.errorbar(banda_i, banda_z, xerr=error_i, yerr=error_z, fmt='mo',
+plt.errorbar(flujo_i, flujo_z, xerr=error_i, yerr=error_z, fmt='mo',
              label='Datos')
 plt.plot(x, y, 'c', label='Ajuste lineal', lw=2)
 plt.xlabel('Flujo banda i')
 plt.ylabel('Flujo banda z')
 plt.legend(loc='upper left')
-plt.xlim(-0.5, 140)
+plt.xlim(-1, 500)
+plt.savefig('p3_ajuste.eps')
 
 plt.show()
