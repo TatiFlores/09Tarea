@@ -6,6 +6,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+'''
+En este script se deriva la constante de Hubble para dos sets de datos
+(pregunta 1 y pregunta 2), incluyendo su intervalo de confianza al 95%
+'''
+
 
 def modelo_1(parametro, D):
     '''
@@ -20,6 +25,10 @@ def modelo_1(parametro, D):
 
 
 def func_minimizar_1(datos_distancia, parametro):
+    '''
+    Funcion que se utilizará al llamar a curve_fit para encontrar H0.
+    Corresponde al modelo 21 (v = H0 * D)
+    '''
     D = datos_distancia
     return modelo_1(parametro, D)
 
@@ -37,6 +46,10 @@ def modelo_2(parametro, v):
 
 
 def func_minimizar_2(datos_velocidad, parametro):
+    '''
+    Funcion que se utilizará al llamar a curve_fit para encontrar H0.
+    Corresponde al modelo 21 (v / H0 = D)
+    '''
     v = datos_velocidad
     return modelo_2(parametro, v)
 
@@ -74,6 +87,9 @@ def sim_bootstrap(datos, H0_inicial):
 
 
 def biseccion(parametro1, parametro2):
+    '''
+    Retorna la funcion de la biseccion vista en clases, dado dos parametros
+    '''
     b1 = parametro1
     b2 = parametro2
     b_biseccion = (b1 * b2 - 1 + np.sqrt((1 + b1**2) *
