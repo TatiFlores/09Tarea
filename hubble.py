@@ -6,18 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-# class const_Hubble(object):
-#     '''
-#     Docstring
-#     '''
-#
-#     def __init__(self, distancias, velocidades_recesion, nosequemas):
-#         # np.loadtxt('archivo_datos', usecols=[-2])
-#         # np.loadtxt('archivo_datos', usecols=[-1])
-#         # Los dos anteriores tengo que usarlos en mi codigo para cargar datos
-#
-#         self.distancias = distancias
-#         self.veloc_recesion = velocidades_recesion
 
 def modelo_1(parametro, D):
     '''
@@ -29,6 +17,7 @@ def modelo_1(parametro, D):
     H0 = parametro
     v = H0 * D
     return v
+
 
 def func_minimizar_1(datos_distancia, parametro):
     D = datos_distancia
@@ -52,7 +41,7 @@ def func_minimizar_2(datos_velocidad, parametro):
     return modelo_2(parametro, v)
 
 
-def sim_bootstrap (datos, H0_inicial):
+def sim_bootstrap(datos, H0_inicial):
     ''' Realiza la simulacion de bootstrap para encontrar un intervalo
     de confianza del 95%
     '''
@@ -60,54 +49,43 @@ def sim_bootstrap (datos, H0_inicial):
     # N = numero de datos ; Nboot = int(N * np.log10(N)**2);
     # Pero N es muy pequeño (24 o 36)
     D, v = datos
-    N = len(D) * 1000 # Para agrandar el N
-    Nboot = int(N * np.log10(N)**2)
+    N = len(D)
+    Nboot = int(N * np.log10(N)**2) * 100  # Aqui agrando Nboot (*100)
 
-    D_boot[i] = np.zeros(Nboot)
-    D_boot[i] = np.zeros(Nboot)
-    H0_valores_1 = np.zeros(Nboot)
-    H0_cov_1 = np.zeros(Nboot)
-    H0_valores_2 = np.zeros(Nboot)
-    H0_cov_2 = np.zeros(Nboot)
+    np.random.seed(800)
+    H0_valores = np.zeros(Nboot)
     for i in range(Nboot):
         s = np.random.randint(low=0, high=N, size=N)
-        D_boot[i] = np.mean(D[s])
-        v_boot[i] = np.mean(v[s])
+        D_boot = D[s]
+        v_boot = v[s]
+        H0_1, H0_cov_1 = curve_fit(func_minimizar_1, D_boot, v_boot, H0_inicial)
+        H0_2, H0_cov_2 = curve_fit(func_minimizar_2, v_boot, D_boot, H0_inicial)
+        H0_bisec = biseccion(H0_1, H0_2)
+        H0_valores[i] = H0_bisec
 
-        H0_valores_1[i], H0_cov_1[i] = curve_fit(func_minimizar_1,  D_boot[i],
-                                           v_boot[i], H0_inicial)
-        H0_valores_2[i], H0_cov_2[i] = curve_fit(func_minimizar_2,  v_boot[i],
-                                           D_boot[i], H0_inicial)
+    H0_sort = np.sort(H0_valores)
 
-    H0_prom = (h0_valores_1 + h0_valores_2) / 2
+    # Intervalo de confianza:
+    limite_bajo = H0_sort[int(Nboot * 0.025)]
+    limite_alto = H0_sort[int(Nboot * 0.975)]
+    return [H0_valores, limite_bajo, limite_alto]
 
-    # Ordenar los datos para encontrar los intervalos de confianza
-    H0_1_sort = np.sort(H0_valores_1)
-    H0_2_sort = np.sort(H0_valores_2)
-    H0_prom_sort = np.sort(H0_prom)
 
-    # Intervalo de confianza del modelo 1:
-    limite_bajo_1 = H0_1_sort[int(Nboot * 0.025)]
-    limite_alto_1 = H0_1_sort[int(Nboot * 0.975)]
-    mod_1 = [H0_valores_1, limite_bajo_1, limite_alto_1]  # Valor a retornar
-
-    # Intervalo de confianza del modelo 2:
-    limite_bajo_2 = H0_2_sort[int(Nboot * 0.025)]
-    limite_alto_2 = H0_2_sort[int(Nboot * 0.975)]
-    mod_2 = [H0_valores_2, limite_bajo_2, limite_alto_2]  # Valor a retornar
-
-    # Intervalo de confianza del modelo promedio:
-    limite_bajo_p = H0_prom_sort[int(Nboot * 0.025)]
-    limite_alto_p = H0_prom_sort[int(Nboot * 0.975)]
-    mod_p = [H0_prom, limite_bajo_p, limite_alto_p]  # Valor a retornar
-
-    return [mod_1, mod_2, mod_p]
-
+def biseccion(parametro1, parametro2):
+    b1 = parametro1
+    b2 = parametro2
+    b_biseccion = (b1 * b2 - 1 + np.sqrt((1 + b1**2) * (1 + b2**2))) / (b1 + b2)
+    return b_biseccion
 
 # Main
 
+'''
+------------------------------ Pregunta 1 -------------------------------------
+'''
+
 distance = np.loadtxt("data/hubble_original.dat", usecols=[-2])
 recession_velocity = np.loadtxt("data/hubble_original.dat", usecols=[-1])
+
 
 # =================== Minimizar Chi cuadrado ===============================
 H0_inicial = 10
@@ -123,8 +101,24 @@ H0_optimo_mod2, H0_cov_mod2 = curve_fit(func_minimizar_2, recession_velocity,
                                         distance, H0_inicial)
 
 # Modelo promedio:
-H0_optimo_modprom = (H0_optimo_mod1 + H0_optimo_mod2) / 2
+H0_optimo_modprom = biseccion(H0_optimo_mod1, H0_optimo_mod2)
 
+print 'PREGUNTA 1:'
+print '- H0 modelo 1 = ', H0_optimo_mod1[0], '[km / s / Mpc]'
+print '- H0 modelo 2 = ', H0_optimo_mod2[0], '[km / s / Mpc]'
+print '- H0 modelo promedio = ', H0_optimo_modprom[0], '[km / s / Mpc]'
+# H0_optimo ... [0] => [0] es porque H0 es un arreglo y quiero solo el numero
+
+
+# ==================== Intervalo de confianza =============================
+datos = [distance, recession_velocity]
+BOOTSTRAP = sim_bootstrap(datos, H0_inicial)
+H0 = BOOTSTRAP[0]
+limite_bajo = BOOTSTRAP[1]
+limite_alto = BOOTSTRAP[2]
+print "El intervalo de confianza al 95% es: [{}, {}]".format(limite_bajo,
+                                                            limite_alto)
+print ' '
 
 # =============================== Plots ====================================
 
@@ -142,5 +136,72 @@ plt.ylabel('Velocidad de recesion [km / s]',fontsize = 14)
 plt.xlim(-0.5,2.5)
 plt.grid(False)
 plt.legend(loc='upper left')
-plt.title('Titulo',fontsize = 16)
+
+plt.figure(2)
+plt.clf()
+plt.hist(H0, bins=30)
+plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$',fontsize = 14)
+plt.ylabel('Frecuencia',fontsize = 14)
+plt.axvline(np.mean(H0), color='r')
+
+'''
+------------------------------ Pregunta 2 -------------------------------------
+'''
+
+distance = np.loadtxt("data/SNIa.dat", usecols=[-2])
+recession_velocity = np.loadtxt("data/SNIa.dat", usecols=[-1])
+
+
+# =================== Minimizar Chi cuadrado ===============================
+H0_inicial = 4
+D = np.linspace(4000, 31000, 100)
+v = np.linspace(40, 500, 100)
+
+# Modelo 1:
+H0_optimo_mod1, H0_cov_mod1 = curve_fit(func_minimizar_1, distance,
+                                        recession_velocity, H0_inicial)
+
+# Modelo 2:
+H0_optimo_mod2, H0_cov_mod2 = curve_fit(func_minimizar_2, recession_velocity,
+                                        distance, H0_inicial)
+
+# Modelo promedio:
+H0_optimo_modprom = biseccion(H0_optimo_mod1, H0_optimo_mod2)
+
+print 'PREGUNTA 2:'
+print '- H0 modelo 1 = ', H0_optimo_mod1[0], '[km / s / Mpc]'
+print '- H0 modelo 2 = ', H0_optimo_mod2[0], '[km / s / Mpc]'
+print '- H0 modelo promedio = ', H0_optimo_modprom[0], '[km / s / Mpc]'
+
+
+# ==================== Intervalo de confianza =============================
+datos = [distance, recession_velocity]
+BOOTSTRAP = sim_bootstrap(datos, H0_inicial)
+H0 = BOOTSTRAP[0]
+limite_bajo = BOOTSTRAP[1]
+limite_alto = BOOTSTRAP[2]
+print "El intervalo de confianza al 95% es: [{}, {}]".format(limite_bajo,
+                                                            limite_alto)
+# =============================== Plots ====================================
+
+plt.figure(3)
+plt.clf()
+plt.plot(distance, recession_velocity, 'm^', label='Datos')
+plt.plot(D, func_minimizar_1(D, H0_optimo_mod1), 'limegreen',
+         label='Modelo $v = H_0 * D$')
+plt.plot(func_minimizar_2(v,H0_optimo_mod2), v, 'mediumblue',
+         label='Modelo $D = v / H_0$')
+plt.plot(D, func_minimizar_1(D, H0_optimo_modprom), 'orange',
+         label='Modelo promedio')
+plt.xlabel('Distancia [Mpc]',fontsize = 14)
+plt.ylabel('Velocidad de recesion [km / s]',fontsize = 14)
+plt.grid(False)
+plt.legend(loc='upper left')
+
+plt.figure(4)
+plt.clf()
+plt.hist(H0, bins=30)
+plt.axvline(np.mean(H0), color='r')
+plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$',fontsize = 14)
+plt.ylabel('Frecuencia',fontsize = 14)
 plt.show()
