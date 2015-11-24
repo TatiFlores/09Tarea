@@ -58,8 +58,10 @@ def sim_bootstrap(datos, H0_inicial):
         s = np.random.randint(low=0, high=N, size=N)
         D_boot = D[s]
         v_boot = v[s]
-        H0_1, H0_cov_1 = curve_fit(func_minimizar_1, D_boot, v_boot, H0_inicial)
-        H0_2, H0_cov_2 = curve_fit(func_minimizar_2, v_boot, D_boot, H0_inicial)
+        H0_1, H0_cov_1 = curve_fit(func_minimizar_1, D_boot, v_boot,
+                                   H0_inicial)
+        H0_2, H0_cov_2 = curve_fit(func_minimizar_2, v_boot, D_boot,
+                                   H0_inicial)
         H0_bisec = biseccion(H0_1, H0_2)
         H0_valores[i] = H0_bisec
 
@@ -74,7 +76,8 @@ def sim_bootstrap(datos, H0_inicial):
 def biseccion(parametro1, parametro2):
     b1 = parametro1
     b2 = parametro2
-    b_biseccion = (b1 * b2 - 1 + np.sqrt((1 + b1**2) * (1 + b2**2))) / (b1 + b2)
+    b_biseccion = (b1 * b2 - 1 + np.sqrt((1 + b1**2) *
+                                         (1 + b2**2))) / (b1 + b2)
     return b_biseccion
 
 # Main
@@ -117,7 +120,7 @@ H0 = BOOTSTRAP[0]
 limite_bajo = BOOTSTRAP[1]
 limite_alto = BOOTSTRAP[2]
 print "El intervalo de confianza al 95% es: [{}, {}]".format(limite_bajo,
-                                                            limite_alto)
+                                                             limite_alto)
 print ' '
 
 # =============================== Plots ====================================
@@ -127,21 +130,21 @@ plt.clf()
 plt.plot(distance, recession_velocity, 'm^', label='Datos')
 plt.plot(D, func_minimizar_1(D, H0_optimo_mod1), 'limegreen',
          label='Modelo $v = H_0 * D$')
-plt.plot(func_minimizar_2(v,H0_optimo_mod2), v, 'mediumblue',
+plt.plot(func_minimizar_2(v, H0_optimo_mod2), v, 'mediumblue',
          label='Modelo $D = v / H_0$')
 plt.plot(D, func_minimizar_1(D, H0_optimo_modprom), 'orange',
          label='Modelo promedio')
-plt.xlabel('Distancia [Mpc]',fontsize = 14)
-plt.ylabel('Velocidad de recesion [km / s]',fontsize = 14)
-plt.xlim(-0.5,2.5)
+plt.xlabel('Distancia [Mpc]', fontsize=14)
+plt.ylabel('Velocidad de recesion [km / s]', fontsize=14)
+plt.xlim(-0.5, 2.5)
 plt.grid(False)
 plt.legend(loc='upper left')
 
 plt.figure(2)
 plt.clf()
 plt.hist(H0, bins=30)
-plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$',fontsize = 14)
-plt.ylabel('Frecuencia',fontsize = 14)
+plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$', fontsize=14)
+plt.ylabel('Frecuencia', fontsize=14)
 plt.axvline(np.mean(H0), color='r')
 
 '''
@@ -181,7 +184,7 @@ H0 = BOOTSTRAP[0]
 limite_bajo = BOOTSTRAP[1]
 limite_alto = BOOTSTRAP[2]
 print "El intervalo de confianza al 95% es: [{}, {}]".format(limite_bajo,
-                                                            limite_alto)
+                                                             limite_alto)
 # =============================== Plots ====================================
 
 plt.figure(3)
@@ -189,19 +192,19 @@ plt.clf()
 plt.plot(distance, recession_velocity, 'm^', label='Datos')
 plt.plot(D, func_minimizar_1(D, H0_optimo_mod1), 'limegreen',
          label='Modelo $v = H_0 * D$')
-plt.plot(func_minimizar_2(v,H0_optimo_mod2), v, 'mediumblue',
+plt.plot(func_minimizar_2(v, H0_optimo_mod2), v, 'mediumblue',
          label='Modelo $D = v / H_0$')
 plt.plot(D, func_minimizar_1(D, H0_optimo_modprom), 'orange',
          label='Modelo promedio')
-plt.xlabel('Distancia [Mpc]',fontsize = 14)
-plt.ylabel('Velocidad de recesion [km / s]',fontsize = 14)
+plt.xlabel('Distancia [Mpc]', fontsize=14)
+plt.ylabel('Velocidad de recesion [km / s]', fontsize=14)
 plt.grid(False)
 plt.legend(loc='upper left')
 
-plt.figure(4)
+plt.figure(2)
 plt.clf()
 plt.hist(H0, bins=30)
+plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$', fontsize=14)
+plt.ylabel('Frecuencia', fontsize=14)
 plt.axvline(np.mean(H0), color='r')
-plt.xlabel('Valor $H_0 [km \cdot s^{-1}\cdot Mpc^{-1}]$',fontsize = 14)
-plt.ylabel('Frecuencia',fontsize = 14)
 plt.show()
