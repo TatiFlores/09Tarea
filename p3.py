@@ -4,6 +4,11 @@ from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+'''
+En este script se encuentra una linea recta que mejor modela la relación entre
+el flujo de la banda i y la banda z, incluyendo los intervalos de confianza al
+95% para los parámetros de la línea recta.
+'''
 
 # Datos
 flujo_i = np.loadtxt("data/DR9Q.dat", usecols=[80]) * 3.631
@@ -11,7 +16,7 @@ error_i = np.loadtxt("data/DR9Q.dat", usecols=[81]) * 3.631
 flujo_z = np.loadtxt("data/DR9Q.dat", usecols=[82]) * 3.631
 error_z = np.loadtxt("data/DR9Q.dat", usecols=[83]) * 3.631
 
-# Simulacion montecarlo
+# ========================= Simulacion montecarlo ===========================
 np.random.seed(800)
 Nmc = 10000
 pendiente = np.zeros(Nmc)
