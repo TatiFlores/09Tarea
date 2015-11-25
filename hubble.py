@@ -113,8 +113,8 @@ recession_velocity = np.loadtxt("data/hubble_original.dat", usecols=[-1])
 
 # =================== Minimizar Chi cuadrado ===============================
 H0_inicial = 10
-D = np.linspace(-0.5, 2.5, 100)
-v = np.linspace(-400, 1200, 100)
+D = np.linspace(min(distance), max(distance), 100)
+v = np.linspace(min(recession_velocity), max(recession_velocity), 100)
 
 # Modelo 1:
 H0_optimo_mod1, H0_cov_mod1 = curve_fit(func_minimizar_1, distance,
@@ -181,14 +181,14 @@ plt.savefig('p1.eps')
 -------------------------------------------------------------------------
 '''
 
-distance = np.loadtxt("data/SNIa.dat", usecols=[-2])
-recession_velocity = np.loadtxt("data/SNIa.dat", usecols=[-1])
+distance = np.loadtxt("data/SNIa.dat", usecols=[-1])
+recession_velocity = np.loadtxt("data/SNIa.dat", usecols=[-2])
 
 
 # =================== Minimizar Chi cuadrado ===============================
 H0_inicial = 4
-D = np.linspace(4000, 31000, 100)
-v = np.linspace(40, 500, 100)
+D = np.linspace(min(distance), max(distance), 100)
+v = np.linspace(min(recession_velocity), max(recession_velocity), 100)
 
 # Modelo 1:
 H0_optimo_mod1, H0_cov_mod1 = curve_fit(func_minimizar_1, distance,
