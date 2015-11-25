@@ -18,7 +18,7 @@ error_z = np.loadtxt("data/DR9Q.dat", usecols=[83]) * 3.631
 
 # ========================= Simulacion montecarlo ===========================
 np.random.seed(800)
-Nmc = 10000
+Nmc = 1000000
 pendiente = np.zeros(Nmc)
 coef_posic = np.zeros(Nmc)
 for i in range(Nmc):
@@ -40,10 +40,12 @@ print """El intervalo de confianza al 95% para la pendiente
 print ' '
 print """El intervalo de confianza al 95% para el coeficiente de posicion
          es: [{}:{}]""".format(limite_bajo_coef, limite_alto_coef)
-
+print ' '
 # =========================== Ajuste lineal ===============================
 
 PENDIENTE, COEF_POSIC = np.polyfit(flujo_i, flujo_z, 1)
+print 'Pendiente', PENDIENTE
+print 'Coeficiente de posicion', COEF_POSIC
 x = np.linspace(min(flujo_i) - max(error_i), max(flujo_i) + max(error_i), 1000)
 y = x * PENDIENTE + COEF_POSIC
 
